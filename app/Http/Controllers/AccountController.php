@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\FileUploadController;
-use Intervention\image\ImageManager;
-use Intervention\image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 
 class AccountController extends Controller
@@ -84,7 +84,7 @@ class AccountController extends Controller
         $rules = [
             'name' => 'required|min:3',
             'email' => 'required|email|unique:users,email,'.Auth::user()->id.',id',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ];
 
         if (!empty($request->image)){
@@ -100,29 +100,28 @@ class AccountController extends Controller
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->save();
 
         //here will upload image
         if (!empty($request->image)){
             // delete old image here
-            File::delete(public_path('uploads/profile'.$user->image));
-            File::delete(public_path('uploads/profile/thumb'.$user->image));
+            File::delete(public_path('uploads/profile/'.$user->image));
+            File::delete(public_path('uploads/profile/thumb/'.$user->image));
 
             $image = $request->image;
             $ext = $image->getClientOriginalExtension();
             $imageName = time().'.'.$ext;
-            $image->move(public_path('uploads/profile',$imageName));
+            $image->move(public_path('uploads/profile'),$imageName);
             
             $user->image = $imageName; 
-            $user->save();
+            
 
             $manager = new ImageManager(Driver::class);
             $img = $manager->read(public_path('uploads/profile/'.$imageName)); 
-            
             $img->cover(150, 150);
             $img->save(public_path('uploads/profile/thumb/'.$imageName));
 
         }
+        $user->save();
         return redirect()->route('account.profile')->with('success','Profile updated successfully.');
     }
 

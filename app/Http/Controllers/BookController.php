@@ -6,8 +6,8 @@ use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
-use Intervention\image\ImageManager;
-use Intervention\image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 
 class BookController extends Controller
@@ -57,7 +57,6 @@ class BookController extends Controller
         $book->description = $request->description;
         $book->author = $request->author;
         $book->status = $request->status;
-        $book->save();
 
         //upload image book
         if(!empty($request->image)){
@@ -75,6 +74,7 @@ class BookController extends Controller
             $img->resize(150, 150);
             $img->save(public_path('uploads/books/thumb/'.$imageName));
         }
+        $book->save();
 
         return redirect()->route('books.index')->with('success', 'book added successfully.');
     }
@@ -96,7 +96,7 @@ class BookController extends Controller
             'title' => 'required|min:5',
             'author' => 'required|min:3',
             'status' => 'required',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ];
 
         if(!empty($request->iamge)) {
