@@ -18,7 +18,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class AccountController extends Controller
 {
-    //show register page
+    //this method show register page
     public function register(){
         return view('account.register');
     }
