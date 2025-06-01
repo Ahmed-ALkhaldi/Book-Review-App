@@ -38,7 +38,7 @@ class BookController extends Controller
             'title' => 'required|min:5',
             'author' => 'required|min:3',
             'status' => 'required',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'image' => 'nullable|image'
         ];
 
         if(!empty($request->image)) {
